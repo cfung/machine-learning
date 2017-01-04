@@ -4,6 +4,7 @@ from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
 from collections import defaultdict
+from helper import calculate_safety, calculate_reliability, evaluate_results
 
 class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
@@ -24,11 +25,12 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
-        self.max_trail = 300
+        self.max_trail = 800
         self.prev_state = None
         self.prev_action = None
         self.prev_reward = None
         self.def_Q = 0
+        self.trial_number = 1
 
         
         #  We'll use defaultdict and by default it is initialized to 0
@@ -40,6 +42,8 @@ class LearningAgent(Agent):
                     self.Q[(i, j, k)] = defaultdict(int)
 
 
+
+
     def reset(self, destination=None, testing=False):
         """ The reset function is called at the beginning of each trial.
             'testing' is set to True if testing trials are being used
@@ -47,21 +51,32 @@ class LearningAgent(Agent):
 
         # Select the destination as the new location to route to
         self.planner.route_to(destination)
+
+        self.trial_number += 1
+        print "trial_number is...", self.trial_number
         
         ########### 
         ## TO DO ##
         ###########
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
-        # If 'testing' is True, set epsilon and alpha to 
+        # If 'testing' is True, set epsilon and alpha to 0
         if testing:
             self.epsilon = 0
             self.alpha = 0
+        else:
+            #self.epsilon -= 0.05
+            self.epsilon = math.cos(self.trial_number * self.alpha)#math.exp(-0.1* self.trial_number)   # 1/k (epsilon * 1/k)
 
-        self.gamma = 0
+            # 1/(math.pow(self.trial_number, 2))
+            # math.pow(self.alpha,self.trial_number)
+
+        self.gamma = 0.3  # gamma determines how much future reward is valued.  0 means immediate reward
         self.prev_state = None
         self.prev_action = None
         self.prev_reward = None
+
+        
 
         return None
 
@@ -215,6 +230,15 @@ class LearningAgent(Agent):
 
         return 
 
+    '''
+    def learn(self, curr_s, curr_a, reward):
+    next_s = self.build_state()
+    self.createQ(next_s)
+    curr_q = self.Q[curr_s][curr_a]
+    delta = reward + max(self.Q[next_s][a] for a in self.valid_actions)
+    self.Q[curr_s][curr_a] = (1.0 - self.alpha)*curr_q + self.alpha*delta
+    '''
+
 
     def update(self):
         """ The update function is called when a time step is completed in the 
@@ -248,7 +272,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning = True, alpha = 0.01, epsilon = 0.5)
+    agent = env.create_agent(LearningAgent, learning = True, alpha = 0.6, epsilon = 1.0)
     #agent.learning = True
     #agent.epsilon = 1
     #agent.alpha = 0.5
@@ -284,6 +308,20 @@ def run():
     #sim.n_test = agent.max_trail
     sim.run(tolerance = 0.6, n_test = agent.max_trail)
 
-
+'''
+def get_opt_result():
+    accepted_ratings = ["A+"]
+    safety_rating, reliability_rating = evaluate_results('sim_improved-learning.csv')
+    # log evaluation to ratings.txt
+    f = open('smartcab/ratings.txt', 'a')
+    print >> f, "Rating results \n"
+    print >> f, safety_rating
+    print >> f, reliability_rating
+    f.close()
+    if safety_rating not in accepted_ratings or reliability_rating not in accepted_ratings:
+        run()
+        return get_opt_result()
+'''
 if __name__ == '__main__':
+    #get_opt_result()
     run()
