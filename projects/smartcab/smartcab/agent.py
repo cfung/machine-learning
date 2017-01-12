@@ -25,22 +25,12 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
-        self.max_trail = 800
+        self.max_trail = 20
         self.prev_state = None
         self.prev_action = None
         self.prev_reward = None
         self.def_Q = 0
-        self.trial_number = 1
-
-        
-        #  We'll use defaultdict and by default it is initialized to 0
-        #  Initial states include 'light status', 'oncoming traffic' 
-
-        for i in ['green', 'red']:
-            for j in [None, 'forward', 'left', 'right']:
-                for k in self.env.valid_actions:
-                    self.Q[(i, j, k)] = defaultdict(int)
-
+        self.trial_number = 0
 
 
 
@@ -61,17 +51,23 @@ class LearningAgent(Agent):
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
+
+
         if testing:
             self.epsilon = 0
             self.alpha = 0
         else:
-            #self.epsilon -= 0.05
-            self.epsilon = math.cos(self.trial_number * self.alpha)#math.exp(-0.1* self.trial_number)   # 1/k (epsilon * 1/k)
 
-            # 1/(math.pow(self.trial_number, 2))
-            # math.pow(self.alpha,self.trial_number)
+            self.epsilon -= 0.05  # this is used for default learning agent
+            
+            #self.epsilon = math.exp(-self.alpha * self.trial_number)
 
-        self.gamma = 0.3  # gamma determines how much future reward is valued.  0 means immediate reward
+            # other decay functions that were tried
+            # self.epsilon = math.cos(0.15*self.trial_number)
+            # self.epsilon = 1/(t^2)
+            # self.epsilon = float(1)/(math.exp(float( 0.1 * self.trial_number)))
+
+        self.gamma = 0.1  # gamma determines how much future reward is valued.  0 means immediate reward
         self.prev_state = None
         self.prev_action = None
         self.prev_reward = None
@@ -97,14 +93,8 @@ class LearningAgent(Agent):
         
         
         # Set the state as a tuple and inlcude 'light status', 'oncoming traffic' and 'waypoint'
-        self.state = (inputs['light'], inputs['oncoming'], waypoint)
+        self.state = (inputs['light'], inputs['oncoming'], inputs['left'], waypoint)
 
-        #print ("what is self.state (build_state)...", self.state)
-        #print ("what is inputs.values (build_state)", tuple(inputs.values()))
-
-        #state = tuple(inputs.values())
-
-        #print ("BUILD STATE: what is state + type...", state, type(state))
 
         return self.state
 
@@ -153,7 +143,12 @@ class LearningAgent(Agent):
         # When learning, check if the 'state' is not in the Q-table
         # If it is not, create a new dictionary for that state
         #   Then, for each action available, set the initial Q-value to 0.0
+        
+        #  We'll use defaultdict and by default it is initialized to 0
 
+        if self.learning:
+            if state not in self.Q.keys():
+                self.Q[state] = defaultdict(int)
 
         return
 
@@ -230,15 +225,6 @@ class LearningAgent(Agent):
 
         return 
 
-    '''
-    def learn(self, curr_s, curr_a, reward):
-    next_s = self.build_state()
-    self.createQ(next_s)
-    curr_q = self.Q[curr_s][curr_a]
-    delta = reward + max(self.Q[next_s][a] for a in self.valid_actions)
-    self.Q[curr_s][curr_a] = (1.0 - self.alpha)*curr_q + self.alpha*delta
-    '''
-
 
     def update(self):
         """ The update function is called when a time step is completed in the 
@@ -272,7 +258,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning = True, alpha = 0.6, epsilon = 1.0)
+    agent = env.create_agent(LearningAgent, learning = True, alpha = 0.01, epsilon = 0.8) #0.8
     #agent.learning = True
     #agent.epsilon = 1
     #agent.alpha = 0.5
@@ -293,7 +279,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay = 0.01, log_metrics = True, display = False, optimized = False)
+    sim = Simulator(env, update_delay = 0.001, log_metrics = True, display = False, optimized = False)
     sim.testing = True
     #sim.update_delay = 0.01, 2.0
     #sim.log_metrics = True
@@ -306,22 +292,10 @@ def run():
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
     #sim.n_test = agent.max_trail
-    sim.run(tolerance = 0.6, n_test = agent.max_trail)
+    sim.run(tolerance = 0.05, n_test = agent.max_trail)
+    # sim.run(tolerance = 0.6, n_test = agent.max_trail
 
-'''
-def get_opt_result():
-    accepted_ratings = ["A+"]
-    safety_rating, reliability_rating = evaluate_results('sim_improved-learning.csv')
-    # log evaluation to ratings.txt
-    f = open('smartcab/ratings.txt', 'a')
-    print >> f, "Rating results \n"
-    print >> f, safety_rating
-    print >> f, reliability_rating
-    f.close()
-    if safety_rating not in accepted_ratings or reliability_rating not in accepted_ratings:
-        run()
-        return get_opt_result()
-'''
+
 if __name__ == '__main__':
     #get_opt_result()
     run()
