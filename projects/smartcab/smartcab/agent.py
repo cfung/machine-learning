@@ -25,7 +25,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
-        self.max_trail = 20
+        self.max_trail = 10 #20
         self.prev_state = None
         self.prev_action = None
         self.prev_reward = None
@@ -258,7 +258,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning = True, alpha = 0.01, epsilon = 0.8) #0.8
+    agent = env.create_agent(LearningAgent, learning = True, alpha = 0.5, epsilon = 1.0) #0.8 (epsilon) #0.01 (alpha)
     #agent.learning = True
     #agent.epsilon = 1
     #agent.alpha = 0.5
@@ -279,7 +279,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay = 0.001, log_metrics = True, display = False, optimized = False)
+    sim = Simulator(env, update_delay = 0.01, log_metrics = True, display = False, optimized = False)
     sim.testing = True
     #sim.update_delay = 0.01, 2.0
     #sim.log_metrics = True
