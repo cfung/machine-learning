@@ -1,8 +1,15 @@
-# machine-learning
-Content for Udacity's Machine Learning curriculum, which includes projects and their descriptions.
+# Machine Learning Engineer Nanodegree Projects
 
-Please use the `projects` directory for English-language content. Use the `projects_cn` directory for Chinese-language content (for international students).
+Project 0:  Titanic Survival Exploration -  create decision functions that attempt to predict survival outcomes from the 1912 Titanic disaster based on each passenger’s features, such as sex and age.
 
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>. Please refer to [Udacity Terms of Service](https://www.udacity.com/legal) for further information.
+Project 1:  Predicting Boston Housing Prices - build an optimal model based on a statistical analysis with the tools available. This model will then used to estimate the best selling price for your client’s home.
+
+Project 2:  Building a Student Intervention System - to model the factors that predict how likely a student is to pass their high school final exam.
+
+Project 3: Creating Customer Segments - use unsupervised learning techniques to see if any similarities exist between customers, and how to best segment customers into distinct categories.
+
+Project 4: Train a Smartcab to Drive - use reinforcement learning techniques to construct a demonstration of a smartcab operating in real-time to prove that both safety and efficiency can be achieved.
+
+Capstone:  Sentiment Analysis 
 
 [![Machine Learning Nanodegree](https://github.com/cfung/machine-learning/blob/master/machine_learning_nano-1.png)]
